@@ -6,12 +6,20 @@ html(lang="en")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
         title Mubla
     body
-         h1 Movie Quotes 
-        form(action="/quotes", method="post")
-            label(for="movie") 
-            input(type="text", name="movie", placeholder="Movie Title")
-            label(for="quote") 
-            input(type="text", name="quote", placeholder="Movie Quote")
+        h1 Album Post 
+        form(action="/card", method="post")
+            label(for="user") 
+            input(type="text", name="user", placeholder="User Name")
+            label(for="album_cover_title") 
+            input(type="text", name="album_cover_title", placeholder="Album Cover Title")
+            label(for="album-cover-url") 
+            input(type="text", name="album_cover_url", placeholder="Album Cover Url")
             br
             br
             button(type="submit") Submit
+
+        h1 Album List 
+        each album in albums 
+            h3= `${album.username}`
+            h3= `${album.album}`
+            img(src=`${album.cover}`, alt=`${album.album}`)

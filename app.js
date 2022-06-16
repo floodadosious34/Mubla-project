@@ -1,8 +1,11 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb')
+const session = require('express-session')
+
 const app = express()
 
+app.use(session({ secret: "It's a secret" }))
 app.use(express.static('public'))
 app.set('view engine', 'pug')
 
@@ -26,8 +29,24 @@ client.connect(err => {
     // client.close();
     app.get('/', (req, res) => {
         exampleCollection.find().toArray().then(results => {
-            res.send(results)
+            res.render('index', {albums: results})
         })
+    })
+
+    app.post('/card', (req, res) => {
+        console.log(req.body)
+        exampleCollection.insertOne({
+            "username": req.body.user,
+            "album": req.body.album_cover_title,
+            "cover": req.body.album_cover_url,
+            "likers": [],
+            "dislikers": []
+        })
+            .then(result => {
+                console.log(result)
+                res.redirect('/')
+            })
+            .catch(error => console.log(error))
     })
 
    
