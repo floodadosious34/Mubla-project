@@ -4,22 +4,40 @@ html(lang="en")
         meta(charset="UTF-8")
         meta(http-equiv="X-UA-Compatible", content="IE=edge")
         meta(name="viewport", content="width=device-width, initial-scale=1.0")
+        script(src="https://kit.fontawesome.com/01b286d797.js" crossorigin="anonymous")
+        link(rel="stylesheet", href="/static/styles/normalize.css")
+        link(rel="stylesheet", href="/static/styles/style.css")
         title Mubla
     body
-        h1 Album Post 
-        form(action="/card", method="post")
-            label(for="user") 
-            input(type="text", name="user", placeholder="User Name")
-            label(for="album_cover_title") 
-            input(type="text", name="album_cover_title", placeholder="Album Cover Title")
-            label(for="album-cover-url") 
-            input(type="text", name="album_cover_url", placeholder="Album Cover Url")
-            br
-            br
-            button(type="submit") Submit
+        div.main
+            h1 MULBA REVIEWS
+            h1 Album Post 
+            form(action="/card", method="post")
+                label(for="user") 
+                input(type="text", name="user", placeholder="User Name")
+                label(for="artist") 
+                input(type="text", name="artist", placeholder="Artist Name")
+                label(for="album_cover_title") 
+                input(type="text", name="album_cover_title", placeholder="Album Cover Title")
+                label(for="album-cover-url") 
+                input(type="text", name="album_cover_url", placeholder="Album Cover Url")
+                br
+                br
+                button(type="submit") Submit
 
-        h1 Album List 
-        each album in albums 
-            h3= `${album.username}`
-            h3= `${album.album}`
-            img(src=`${album.cover}`, alt=`${album.album}`)
+            h1 Album List 
+            each album, i in albums 
+                //- h3= `${album[i]}` Want to number each item
+                div.card
+                    h2.number= `${i + 1}`
+                    div.content
+                        img(src=`${album.cover}` alt=`${album.album}`)
+                        h3= `${album.artist} - ${album.album}`
+                        i(class="fa-solid fa-thumbs-up fa-lg" id="like" name=`${album.album}` onclick=`putLikes('${album.album}')`)
+                        p= `${album.likes.length} likes`
+                        i(class="fa-solid fa-thumbs-down fa-lg" id="dislike" name=`${album.album}` onclick=`putDisLikes('${album.album}')`)
+                        p= `${album.dislikes.length} dislikes`
+                        p= `Posted by ${album.username}`
+                        button(id="deleteButton" name=`${album.album}` onclick=`deleteButton('${album.album}')`) Delete post
+
+        script(src="/static/main.js") 

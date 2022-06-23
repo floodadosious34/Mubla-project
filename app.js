@@ -1,12 +1,15 @@
 const express = require('express')
 const bodyParser = require('body-parser')
+const cookieParser = require('cookie-parser')
 const { MongoClient, ServerApiVersion } = require('mongodb')
 const session = require('express-session')
+const albumArt = require('album-art')
 
 const app = express()
+app.use(cookieParser())
 
 app.use(session({ secret: "It's a secret" }))
-app.use(express.static('public'))
+app.use('/static', express.static('public'))
 app.set('view engine', 'pug')
 
 app.use(bodyParser.urlencoded({ extended: true }))
@@ -15,6 +18,26 @@ app.use(bodyParser.json())
 const uri = "mongodb+srv://floodadosious:668LYFyU0PC7j4S1@cluster0.nhkayvk.mongodb.net/?retryWrites=true&w=majority"
 
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
+
+/**
+ * Function for getting album Art
+ * @param {*} artist 
+ * @param {*} albumCover 
+ * @returns Url of album cover picture
+ */
+
+function getAlbumePic(artist, albumCover) {
+    return new Promise((resolve, reject) => {
+        albumArt(artist, {album: albumCover, size: 'medium'}, (err, data) => {
+            if(err) {
+                reject(err)
+            } else {
+                resolve(data)
+            }
+        })
+    })
+}
+
 
 client.connect(err => {
     if(err) {
@@ -28,25 +51,82 @@ client.connect(err => {
   // perform actions on the collection object
     // client.close();
     app.get('/', (req, res) => {
+        function byLikes(a, b) {
+            return parseInt(b.likes.length) - parseInt(a.likes.length)
+        }
+
         exampleCollection.find().toArray().then(results => {
-            res.render('index', {albums: results})
+            let sortedResults = results.sort(byLikes)
+            res.render('index', {albums: sortedResults})
         })
     })
 
-    app.post('/card', (req, res) => {
-        console.log(req.body)
-        exampleCollection.insertOne({
-            "username": req.body.user,
-            "album": req.body.album_cover_title,
-            "cover": req.body.album_cover_url,
-            "likers": [],
-            "dislikers": []
-        })
+    
+
+    app.post('/card', async (req, res) => {
+        // console.log(req.body.artist)
+
+        await getAlbumePic(req.body.artist, req.body.album_cover_title)
+            .then((pics)=>
+                exampleCollection.insertOne({
+                    "username": req.body.user,
+                    "artist": req.body.artist,
+                    "album": req.body.album_cover_title,
+                    "cover": pics,
+                    "likes": [],
+                    "dislikes": []
+            }))
             .then(result => {
-                console.log(result)
+                // console.log(result)
                 res.redirect('/')
             })
             .catch(error => console.log(error))
+    })
+
+
+    app.put('/card', (req, res) => {
+        exampleCollection.findOneAndUpdate(
+            {album: req.body.album},
+            {
+                $push: {
+                    likes: req.body.likes
+                }
+            },
+            {
+                upsert: true
+            }
+        ).then(result => {
+            console.log(result)
+            res.redirect('/')
+        }).catch(error => console.log(error))
+    })
+
+    app.put('/cards', (req, res) => {
+        exampleCollection.findOneAndUpdate(
+            {album: req.body.album},
+            {
+                $push: {
+                    dislikes: req.body.dislikes
+                }
+            },
+            {
+                upsert: true
+            }
+        ).then(result => {
+            console.log(result)
+            res.redirect('/')
+        }).catch(error => console.log(error))
+    })
+
+    app.delete('/card', (req, res) => {
+        exampleCollection.deleteOne(
+            {album: req.body.album}
+        )
+        .then(result => {
+            console.log("deleted")
+            res.redirect('/')
+        })
+        .catch(error => console.log(error))
     })
 
    
