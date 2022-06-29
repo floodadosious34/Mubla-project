@@ -19,8 +19,6 @@ html(lang="en")
                 input(type="text", name="artist", placeholder="Artist Name")
                 label(for="album_cover_title") 
                 input(type="text", name="album_cover_title", placeholder="Album Cover Title")
-                label(for="album-cover-url") 
-                input(type="text", name="album_cover_url", placeholder="Album Cover Url")
                 br
                 br
                 button(type="submit") Submit
@@ -29,7 +27,7 @@ html(lang="en")
             each album, i in albums 
             
                 div.card
-                    h2.number= `${i + 1}` //Render number based on index value in object
+                    h2.number= `${i + 1}` 
                     div.content
                         img(src=`${album.cover}` alt=`${album.album}`)
                         h3= `${album.artist} - ${album.album}`

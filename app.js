@@ -1,5 +1,5 @@
 // Dependiencies
-const {uri} = require("./dburi.js")
+const {uri} = require('./dburi.js')
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
