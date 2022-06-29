@@ -1,14 +1,11 @@
-const like = document.querySelectorAll('.like')
-const dislike = document.querySelectorAll('.dislike')
-// const deleteButton = document.querySelectorAll('.deleteButton')
+// Functions for event handling
 
+// Add likes to a album post
 function putLikes(name) {
-    console.log('workd')
     const likes = {
         album: name,
         likes: "1"
     }
-    console.log(likes)
 
     fetch('/card', {
         method: 'put',
@@ -20,6 +17,7 @@ function putLikes(name) {
     })
 }
 
+// Add dislikes to a album post
 function putDisLikes(name) {
     console.log('Also worked')
 

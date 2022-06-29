@@ -1,3 +1,4 @@
+// Dependiencies
 const {uri} = require("./dburi.js")
 const express = require('express')
 const bodyParser = require('body-parser')
@@ -16,7 +17,7 @@ app.set('view engine', 'pug')
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-
+//Connection for MongoDB
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 })
 
 /**
@@ -38,7 +39,7 @@ function getAlbumePic(artist, albumCover) {
     })
 }
 
-
+//Client connection and DB CRUD operations
 client.connect(err => {
     if(err) {
         console.log(err)
@@ -49,7 +50,7 @@ client.connect(err => {
     const db= client.db("mubla")
     const exampleCollection = db.collection("user_info");
   // perform actions on the collection object
-    // client.close();
+    // Get Request to db for page rendering
     app.get('/', (req, res) => {
         function byLikes(a, b) {
             return parseInt(b.likes.length) - parseInt(a.likes.length)
@@ -62,10 +63,8 @@ client.connect(err => {
     })
 
     
-
+    // Post request for adding req obejt to DB.
     app.post('/card', async (req, res) => {
-        // console.log(req.body.artist)
-
         await getAlbumePic(req.body.artist, req.body.album_cover_title)
             .then((pics)=>
                 exampleCollection.insertOne({
@@ -77,13 +76,12 @@ client.connect(err => {
                     "dislikes": []
             }))
             .then(result => {
-                // console.log(result)
                 res.redirect('/')
             })
             .catch(error => console.log(error))
     })
 
-
+    // Update Request for adding likes to a album
     app.put('/card', (req, res) => {
         exampleCollection.findOneAndUpdate(
             {album: req.body.album},
@@ -101,6 +99,7 @@ client.connect(err => {
         }).catch(error => console.log(error))
     })
 
+    // Update request for adding dislikes to a album
     app.put('/cards', (req, res) => {
         exampleCollection.findOneAndUpdate(
             {album: req.body.album},
@@ -118,6 +117,7 @@ client.connect(err => {
         }).catch(error => console.log(error))
     })
 
+    // Delete request for removing a album from DB.
     app.delete('/card', (req, res) => {
         exampleCollection.deleteOne(
             {album: req.body.album}

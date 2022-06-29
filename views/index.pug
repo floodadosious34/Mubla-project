@@ -27,9 +27,9 @@ html(lang="en")
 
             h1 Album List 
             each album, i in albums 
-                //- h3= `${album[i]}` Want to number each item
+            
                 div.card
-                    h2.number= `${i + 1}`
+                    h2.number= `${i + 1}` //Render number based on index value in object
                     div.content
                         img(src=`${album.cover}` alt=`${album.album}`)
                         h3= `${album.artist} - ${album.album}`
