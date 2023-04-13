@@ -2,11 +2,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
+require('dotenv').config()
+const uri = process.env.MONGO_DB_CONNECTION_STRING
 const { MongoClient, ServerApiVersion } = require('mongodb')
 const session = require('cookie-session')
 const albumArt = require('album-art')
-require('dotenv').config()
-const uri = process.env.MONGO_DB_CONNECTION_STRING
+
 
 const app = express()
 app.use(cookieParser())
