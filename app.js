@@ -11,7 +11,13 @@ const uri = process.env.MONGO_DB_CONNECTION_STRING
 const app = express()
 app.use(cookieParser())
 
-app.use(session({ secret: "It's a secret" }))
+// app.use(session({ secret: "It's a secret" }))
+app.use(session({
+    secret: "It's a secret",
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: true }
+  }))
 app.use('/static', express.static('public'))
 app.set('view engine', 'pug')
 
